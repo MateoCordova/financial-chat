@@ -1,0 +1,41 @@
+﻿@model int
+
+<h1>@financial_chat.Controllers.ChatController.Rooms[Model]</h1>
+
+<div class="row">
+    <div class="col-12">
+        <input type="text" placeholder="text" id="message"/>
+        <button id="btnSend">Send</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <div id="messages"></div>
+    </div>
+    <div class="col-6">
+        <div id="notifications"></div>
+    </div>
+</div>
+
+<script src=~/lib/microsoft/signalr/dist/browser/signalr.min.js></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/Chathub").build();
+    connection.start().then(()=>{
+        connection.invoke("AddToGroup","@Model")
+    }).catch((e) => console.error);
+
+    document.getElementById("btnSend").addEventListener("click", (event)=> {
+        let room = "@Model";
+        let message = document.getElementById("message").value;
+
+        connection.invoke("SendMessage", room, message)
+        document.getElementById("message").value = null;
+        event.preventDefault();
+    })
+    connection.on("RecieveMessage",(user, message) => {
+        var message = "<div><p><strong>" + user + ": </strong>" + message+ "</p></div>";
+        document.getElementById("messages").innerHTML = 
+        document.getElementById("messages").innerHTML + message;
+    })
+</script>
