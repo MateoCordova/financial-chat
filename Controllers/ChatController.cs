@@ -3,6 +3,7 @@ using financial_chat.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace financial_chat.Controllers
 {
@@ -21,6 +22,7 @@ namespace financial_chat.Controllers
             ViewBag.Rooms = _context.Rooms.ToList();
             return View();
         }
+        [Authorize]
         public IActionResult Room(int room)
         {
             ViewBag.Room = _context.Rooms.Find(room);
