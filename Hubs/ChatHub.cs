@@ -1,6 +1,9 @@
 ﻿using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using financial_chat.Controllers;
+using financial_chat.Data;
 using financial_chat.Models;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
@@ -8,6 +11,12 @@ namespace financial_chat.Hubs
 {
     public class ChatHub: Hub
     {
+        private static ChatContext _context;
+
+        public ChatHub(ChatContext context)
+        {
+            _context = context;
+        }
         public async Task SendMessage(string room, string message)
         {
             
@@ -41,6 +50,13 @@ namespace financial_chat.Hubs
                 }
                 else
                 {
+                    try
+                    {
+                        await NewMessage(message, Context.User.Identity.Name, room);
+                    } catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
                     await Clients.Group(room).SendAsync("RecieveMessage", Context.User.Identity.Name, message);
 
                 }
@@ -55,7 +71,16 @@ namespace financial_chat.Hubs
                 await Groups.AddToGroupAsync(Context.ConnectionId, room);
                 await Clients.Group(room).SendAsync("RecieveMessage", Context.User.Identity.Name, "Se ha unido al chat");
             }
-            
+        }
+        private async static Task NewMessage(string message, string User, string room)
+        {
+            Post Post = new Post();
+            Post.Room = _context.Rooms.Find(int.Parse(room));
+            Post.Message = message;
+            Post.Created = DateTime.Now;
+            Post.UserID = User;
+            _context.Posts.Add(Post);
+            await _context.SaveChangesAsync();
         }
     }
 }

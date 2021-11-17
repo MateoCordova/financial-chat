@@ -1,20 +1,17 @@
 ﻿@model int
 
-<h1>@financial_chat.Controllers.ChatController.Rooms[Model]</h1>
-
+<h1>@ViewBag.Room.Nombre</h1>
+<hr/>
 <div class="row">
     <div class="col-12">
-        <input type="text" placeholder="text" id="message"/>
-        <button id="btnSend">Send</button>
+        <div id="messages" style="height:500px; overflow:scroll"></div>
     </div>
 </div>
-
+<hr/>
 <div class="row">
-    <div class="col-6">
-        <div id="messages"></div>
-    </div>
-    <div class="col-6">
-        <div id="notifications"></div>
+    <div class="col-12">
+        <input type="text" placeholder="text" id="message" class="input"/>
+        <button id="btnSend">Send</button>
     </div>
 </div>
 
@@ -22,7 +19,17 @@
 <script>
     var connection = new signalR.HubConnectionBuilder().withUrl("/Chathub").build();
     connection.start().then(()=>{
-        connection.invoke("AddToGroup","@Model")
+        $.get( "/chat/ShowHistorial", 
+            { room: @ViewBag.Room.IdRoom },
+            function( data ) {
+            var message = ""
+            $.each(data, function(i, item) {
+                 message = "<div><p><i>"+ data[i].created +"</i>&emsp;<strong>" + data[i].userID + ": </strong>" + data[i].message+ "</p></div>"  + message;
+            });
+            document.getElementById("messages").innerHTML = message
+            connection.invoke("AddToGroup","@Model")
+        });
+        
     }).catch((e) => console.error);
 
     document.getElementById("btnSend").addEventListener("click", (event)=> {
@@ -34,7 +41,7 @@
         event.preventDefault();
     })
     connection.on("RecieveMessage",(user, message) => {
-        var message = "<div><p><strong>" + user + ": </strong>" + message+ "</p></div>";
+        var message = "<div><p><i>"+ new Date() +"</i>&emsp;<strong>" + user + ": </strong>" + message+ "</p></div>";
         document.getElementById("messages").innerHTML = 
         document.getElementById("messages").innerHTML + message;
     })

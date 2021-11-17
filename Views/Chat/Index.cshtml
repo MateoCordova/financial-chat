@@ -2,9 +2,9 @@
     <div class="col-md-8 offset-2">
         <h2>Chat Rooms</h2>
         <ul class="list-group">
-            @foreach(var e in financial_chat.Controllers.ChatController.Rooms)
+            @foreach(var e in ViewBag.Rooms)
             {
-                <li class="list-group-item"><a href="Chat/Room?room=@e.Key">@e.Value</a></li>
+                <li class="list-group-item"><a href="Chat/Room?room=@e.IdRoom">@e.Nombre</a></li>
             }
         </ul>
     </div>

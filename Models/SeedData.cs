@@ -1,40 +1,21 @@
 ﻿using financial_chat.Data;
-using financial_chat.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
-namespace financial_chat.Controllers
+namespace financial_chat.Models
 {
-    public class ChatController : Controller
+    public class SeedData
     {
-        private static ChatContext _context;
-        private static UserManager<IdentityUser> _userManager;
+        private ChatContext _context;
+        private ApplicationDbContext _Icontext;
 
-        public ChatController(ChatContext context, UserManager<IdentityUser> userManager)
+        public SeedData(ChatContext context, ApplicationDbContext _Icontext)
         {
             _context = context;
-            _userManager = userManager;
-        }
-        public IActionResult Index()
-        {
-            ViewBag.Rooms = _context.Rooms.ToList();
-            return View();
-        }
-        public IActionResult Room(int room)
-        {
-            ViewBag.Room = _context.Rooms.Find(room);
-            return View("Room",room);
+            _Icontext = _Icontext;
+
         }
 
-        public JsonResult ShowHistorial(int room)
-        {
-            var messages = _context.Posts.Include(p => p.Room).Where(p => p.Room.IdRoom == room).OrderByDescending(p => p.Created).Take(50).ToList();
-
-            return Json(messages);
-        }
-
-        public IActionResult Seed()
+        public async Task Seed()
         {
             if (!_context.Rooms.Any())
             {
@@ -43,9 +24,8 @@ namespace financial_chat.Controllers
                 _context.Rooms.Add(new Room("Chat room 3"));
                 _context.Rooms.Add(new Room("Chat room 4"));
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-
             if (!_context.Posts.Any())
             {
                 var Room1 = _context.Rooms.Find("Fernando");
@@ -110,10 +90,8 @@ namespace financial_chat.Controllers
                 _context.Posts.Add(new Post("Hola B", DateTime.Now, Room1, "Mateo"));
                 _context.Posts.Add(new Post("Hola B", DateTime.Now, Room1, "Mateo"));
                 _context.Posts.Add(new Post("Hola A", DateTime.Now, Room1, "Mateo"));
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index");
         }
-
     }
 }

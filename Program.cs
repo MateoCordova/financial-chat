@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.ResponseCompression;
 using financial_chat.Hubs;
+using financial_chat.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ChatContext>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddTransient<SeedData>();
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -52,7 +57,7 @@ app.MapBlazorHub();
 app.MapHub<ChatHub>("/ChatHub");
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Chat}/{action=Index}/{id?}");
 
 //app.MapFallbackToPage("/_Host");
 
