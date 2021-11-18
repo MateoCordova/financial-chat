@@ -10,5 +10,6 @@ The goal of this exercise is to create a simple browser-basedchat application us
 - Supports Multiple Chat Rooms 
 ## How to use:
 1. Open a command prompt on the solution folder 
-2. Run: dotnet run migrations
-3. Run: dotnet rundotnet ef database update --context ChatContext
+2. Run: `dotnet run migrations`
+3. Run: `dotnet run`
+
