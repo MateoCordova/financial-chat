@@ -44,13 +44,11 @@ namespace financial_chat.Controllers
                 _context.Rooms.Add(new Room("Chat room 2"));
                 _context.Rooms.Add(new Room("Chat room 3"));
                 _context.Rooms.Add(new Room("Chat room 4"));
-
-                _context.SaveChanges();
             }
 
             if (!_context.Posts.Any())
             {
-                var Room1 = _context.Rooms.Find("Fernando");
+                var Room1 = _context.Rooms.Find(1);
 
                 _context.Posts.Add(new Post("Hola 1", DateTime.Now, Room1, "Mateo"));
                 _context.Posts.Add(new Post("Hola 2", DateTime.Now, Room1, "Fernando"));
@@ -112,8 +110,8 @@ namespace financial_chat.Controllers
                 _context.Posts.Add(new Post("Hola B", DateTime.Now, Room1, "Mateo"));
                 _context.Posts.Add(new Post("Hola B", DateTime.Now, Room1, "Mateo"));
                 _context.Posts.Add(new Post("Hola A", DateTime.Now, Room1, "Mateo"));
-                _context.SaveChanges();
             }
+            _context.SaveChanges();
             return RedirectToAction("Index");
         }
 
